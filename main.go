@@ -15,7 +15,7 @@ import (
 
 type sslServerConfig struct {
 	Listen      string                     `env:"SSL_LISTEN" envDefault:"0.0.0.0:8999" json:"listen"`
-	PidFile     string                     `env:"SSL_PID_FILE" envDefault:"/tmp/ssl-cert-server.pid" json:"pid_file"`
+	PidFile     string                     `env:"SSL_PID_FILE" envDefault:"/ssl-cert-server.pid" json:"pid_file"`
 	Storage     sslServerStorageConfig     `json:"storage"`
 	LetsEncrypt sslServerLetsEncryptConfig `json:"lets_encrypt"`
 }
