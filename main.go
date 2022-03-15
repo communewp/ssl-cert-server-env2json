@@ -1,8 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"os"
+	"os/exec"
+	"strings"
 
 	"encoding/json"
 
@@ -40,6 +44,12 @@ type sslServerLetsEncryptConfig struct {
 // TBD: sslServerSelfSignedConfig
 
 func main() {
+
+	outPtr := flag.String("o", "", "File to write the generated configuration to")
+	execPtr := flag.String("e", "", "A command to run after config generation is complete")
+
+	flag.Parse()
+
 	cfg := sslServerConfig{}
 	if err := env.Parse(&cfg); err != nil {
 		log.Fatal(err)
@@ -56,5 +66,23 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf(string(out))
+	if *outPtr == "" {
+		fmt.Print(string(out))
+	} else {
+		err = os.WriteFile(*outPtr, out, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if *execPtr == "" {
+		return
+	}
+
+	execArgs := strings.Split(*execPtr, " ")
+	execCmd, execArgs := execArgs[0], execArgs[1:]
+	cmd := exec.Command(execCmd, execArgs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
 }
